@@ -11,6 +11,9 @@
     "parserOptions": {
         "ecmaVersion": "latest"
     },
+    "plugins": [
+        "jsdoc"
+    ],
     "rules": {
     }
 }

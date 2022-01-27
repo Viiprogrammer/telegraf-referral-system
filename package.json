@@ -4,7 +4,8 @@
   "main": "src/index.js",
   "scripts": {
     "test": "jest --notify --config=./jest.config.json",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "jsdoc": "jsdoc ./src/ -d ./docs --configure .jsdoc.json --verbose"
   },
   "description": "Module for creating a referral system for a bot with Telegraf.js ",
   "author": {
@@ -34,7 +35,10 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^5.2.0",
     "jest": "^27.4.7",
-    "node-notifier": "^10.0.0"
+    "node-notifier": "^10.0.0",
+    "jsdoc": "^3.6.10",
+    "eslint-plugin-jsdoc": "^37.7.0",
+    "minami": "^1.2.3"
   },
   "license": "Apache-2.0"
 }
