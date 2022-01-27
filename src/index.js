@@ -1,4 +1,11 @@
 class Referrals {
+  /**
+   * Referal system class constructor
+   * @constructor
+   * @param {object} db - MongoDB Driver connection object
+   * @param {string} [collectionName=referrals] - Referral collection name
+   * @param {number} [referralLevels=3] - Count of levels
+   */
   constructor ({ db, collectionName = 'referrals', referralLevels = 3 }) {
     this._db = db
     this.referalLevels = referralLevels
@@ -14,6 +21,14 @@ class Referrals {
     return this._collection.insertOne(doc)
   }
 
+  /**
+   * Creating new referral with or without parent
+   * @method
+   * @param {string} _id - Referral identifier
+   * @param {string} [payload] - Some payload
+   * @param {string} [parent] - Parent referral identifier
+   * @returns {Promise}
+   */
   async createReferral (_id, payload, parent) {
     if (parent) {
       // Update parent childrens, push new referral to first level
@@ -70,6 +85,13 @@ class Referrals {
     }
   }
 
+  /**
+   * Updating referral payload
+   * @method
+   * @param {string} _id - Referral identifier
+   * @param {string} payload - Some payload (optional)
+   * @returns {Promise}
+   */
   async updateReferralPayload (_id, payload) {
     const referral = await this._collection
       .findOne({ _id }, {
@@ -95,6 +117,12 @@ class Referrals {
     ])
   }
 
+  /**
+   * Removing referral
+   * @method
+   * @returns {Promise}
+   * @param {string} _id - Referral identifier
+   */
   async removeReferral (_id) {
     const referral = await this._collection
       .findOne({ _id }, {
@@ -118,6 +146,12 @@ class Referrals {
     ])
   }
 
+  /**
+   * Getting referral data
+   * @method
+   * @param {string} _id - Referral identifier
+   * @returns {Promise}
+   */
   getReferrals (_id, options) {
     return this._collection
       .findOne(
