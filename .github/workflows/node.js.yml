@@ -45,5 +45,5 @@ jobs:
     - name: Run tests
       run: npm run test
       env:
-        MONGO_URL: "mongodb://localhost:27017/test?replicaSet=rs"
+        MONGO_URL: "mongodb://localhost:27017/test?replicaSet=test-rs"
         MONGO_DB_NAME: "test"
