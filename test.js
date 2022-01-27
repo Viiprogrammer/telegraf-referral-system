@@ -5,6 +5,10 @@ let ReferralSys, firstUserID, userWithParentID, userWithParentIDLevel2, userWith
 const __MONGO_URI__ = process.env.MONGO_URL
 const __MONGO_DB_NAME__ = process.env.MONGO_DB_NAME
 
+if (!process.env.MONGO_URL || !process.env.MONGO_DB_NAME) {
+  throw new Error('Data for connection to Mongodb has not been provided')
+}
+
 function genUserId () {
   return crypto.randomBytes(12)
     .toString('hex')
