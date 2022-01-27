@@ -1,0 +1,4 @@
+{
+  "name": "telegraf-referal-system",
+  "preset": "@shelf/jest-mongodb"
+}
