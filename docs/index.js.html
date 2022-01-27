@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>index.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Referrals.html">Referrals</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Referrals.html#createReferral">createReferral</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Referrals.html#getReferrals">getReferrals</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Referrals.html#removeReferral">removeReferral</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Referrals.html#updateReferralPayload">updateReferralPayload</a></span></li>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">index.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>class Referrals {
+  /**
+   * Referal system class constructor
+   * @constructor
+   * @param {object} db - MongoDB Driver connection object
+   * @param {string} [collectionName=referrals] - Referral collection name
+   * @param {number} [referralLevels=3] - Count of levels
+   */
+  constructor ({ db, collectionName = 'referrals', referralLevels = 3 }) {
+    this._db = db
+    this.referalLevels = referralLevels
+    this._collection = this._db.collection(collectionName)
+  }
+
+  _updateReferal (filter, update, options) {
+    return this._collection
+      .findOneAndUpdate(filter, update, options)
+  }
+
+  _createReferral (doc) {
+    return this._collection.insertOne(doc)
+  }
+
+  /**
+   * Creating new referral with or without parent
+   * @method
+   * @param {string} _id - Referral identifier
+   * @param {string} [payload] - Some payload
+   * @param {string} [parent] - Parent referral identifier
+   * @returns {Promise}
+   */
+  async createReferral (_id, payload, parent) {
+    if (parent) {
+      // Update parent childrens, push new referral to first level
+      const { value: user } = await this._updateReferal(
+        { _id: parent },
+        {
+          $push: {
+            'childrens.1': {
+              _id, payload
+            }
+          }
+        },
+        { new: true }
+      )
+
+      const childrenParents = { 1: parent }
+      // Push into parents of child, other parents of his parent
+      if (user.parents) {
+        for (let parentLevel = 1; parentLevel &lt; this.referalLevels; parentLevel++) {
+          if (user.parents[parentLevel]) {
+            childrenParents[parentLevel + 1] = user.parents[parentLevel]
+          }
+        }
+      }
+
+      const referalDoc = {
+        _id, payload, parents: childrenParents
+      }
+
+      await this._createReferral(referalDoc)
+      let parentsForUpdate = []
+      // Adding to child list of parens (exclusive first level) current child
+      if (childrenParents) {
+        for (let parentLevel = 2; parentLevel &lt;= this.referalLevels; parentLevel++) {
+          const parentId = childrenParents[parentLevel]
+          if (parentId &amp;&amp; parentId.length) {
+            parentsForUpdate.push([{ _id: parentId },
+              {
+                $push: {
+                  [`childrens.${parentLevel}`]: { _id, payload }
+                }
+              }])
+          }
+        }
+        parentsForUpdate = parentsForUpdate.map((parent) => this._updateReferal(...parent))
+        await Promise.all(parentsForUpdate)
+      }
+      return referalDoc
+    } else {
+      return this._createReferral({
+        _id,
+        payload
+      }, {})
+    }
+  }
+
+  /**
+   * Updating referral payload
+   * @method
+   * @param {string} _id - Referral identifier
+   * @param {string} payload - Some payload (optional)
+   * @returns {Promise}
+   */
+  async updateReferralPayload (_id, payload) {
+    const referral = await this._collection
+      .findOne({ _id }, {
+        projection: { parents: 1 }
+      })
+
+    const update = []
+    for (const parent in referral.parents) {
+      update.push(
+        [
+          { _id: referral.parents[parent], [`childrens.${parent}`]: { $elemMatch: { _id } } },
+          { $set: { [`childrens.${parent}.$.payload`]: payload } }
+        ]
+      )
+    }
+
+    return await Promise.all([
+      this._collection.findOneAndUpdate(
+        { _id },
+        { $set: { payload } },
+        { returnDocument: 'after' }
+      ), ...update.map((parent) => this._collection.findOneAndUpdate(...parent))
+    ])
+  }
+
+  /**
+   * Removing referral
+   * @method
+   * @returns {Promise}
+   * @param {string} _id - Referral identifier
+   */
+  async removeReferral (_id) {
+    const referral = await this._collection
+      .findOne({ _id }, {
+        projection: { parents: 1 }
+      })
+
+    const update = []
+    for (const parent in referral.parents) {
+      update.push(
+        [
+          { _id: referral.parents[parent], [`childrens.${parent}`]: { $elemMatch: { _id } } },
+          { $unset: { [`childrens.${parent}`]: '' } }
+        ]
+      )
+    }
+
+    return await Promise.all([
+      this._collection.findOneAndDelete(
+        { _id }
+      ), ...update.map((parent) => this._collection.findOneAndUpdate(...parent))
+    ])
+  }
+
+  /**
+   * Getting referral data
+   * @method
+   * @param {string} _id - Referral identifier
+   * @returns {Promise}
+   */
+  getReferrals (_id, options) {
+    return this._collection
+      .findOne(
+        { _id },
+        {
+          projection: {
+            __v: 0,
+            _id: 0
+          },
+          ...options
+        }
+      )
+  }
+}
+
+module.exports = Referrals
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.10</a> on Thu Jan 27 2022 20:07:53 GMT+0300 (GMT+03:00) using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>
