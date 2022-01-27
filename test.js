@@ -25,8 +25,8 @@ describe('Referral system', () => {
   })
 
   afterAll(async () => {
-    await connection.close();
-    await db.close();
+    await connection.close()
+    await db.close()
   })
 
   it('Create referral without parent', async () => {
