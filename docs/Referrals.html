@@ -63,7 +63,7 @@
 
 
 <div class="description">
-    Referal system class constructor
+    Referral system class constructor
 </div>
 
 
@@ -309,7 +309,7 @@
 
     
 
-    <h4 class="name" id="createReferral"><span class="type-signature">(async) </span>createReferral<span class="signature">(_id, payload<span class="signature-attributes">opt</span>, parent<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+    <h4 class="name" id="createReferral"><span class="type-signature">(async) </span>createReferral<span class="signature">(_id, payload<span class="signature-attributes">opt</span>, parent<span class="signature-attributes">opt</span>, options<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
 
     
 
@@ -352,7 +352,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line32">line 32</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line33">line 33</a>
     </li></ul></dd>
     
 
@@ -501,6 +501,42 @@
         </tr>
 
     
+
+        <tr>
+            
+                <td class="name"><code>options</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>object</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">
+                Mongodb driver options for all requests (for example for transaction session)
+                
+            </td>
+        </tr>
+
+    
     </tbody>
 </table>
 
@@ -547,7 +583,7 @@
 
     
 
-    <h4 class="name" id="getReferrals"><span class="type-signature"></span>getReferrals<span class="signature">(_id)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+    <h4 class="name" id="getReferrals"><span class="type-signature"></span>getReferrals<span class="signature">(_id, options<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
 
     
 
@@ -590,7 +626,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line155">line 155</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line161">line 161</a>
     </li></ul></dd>
     
 
@@ -622,6 +658,8 @@
         <th>Type</th>
 
         
+        <th>Attributes</th>
+        
 
         
 
@@ -647,11 +685,55 @@
             </td>
 
             
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
 
             
 
             <td class="description last">
                 Referral identifier
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>options</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>object</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">
+                Mongodb driver options for all requests (for example for transaction session)
                 
             </td>
         </tr>
@@ -703,7 +785,7 @@
 
     
 
-    <h4 class="name" id="removeReferral"><span class="type-signature">(async) </span>removeReferral<span class="signature">(_id)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+    <h4 class="name" id="removeReferral"><span class="type-signature">(async) </span>removeReferral<span class="signature">(_id, options<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
 
     
 
@@ -746,7 +828,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line126">line 126</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line130">line 130</a>
     </li></ul></dd>
     
 
@@ -778,6 +860,8 @@
         <th>Type</th>
 
         
+        <th>Attributes</th>
+        
 
         
 
@@ -803,11 +887,55 @@
             </td>
 
             
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
 
             
 
             <td class="description last">
                 Referral identifier
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>options</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>object</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">
+                Mongodb driver options for all requests (for example for transaction session)
                 
             </td>
         </tr>
@@ -859,7 +987,7 @@
 
     
 
-    <h4 class="name" id="updateReferralPayload"><span class="type-signature">(async) </span>updateReferralPayload<span class="signature">(_id, payload)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+    <h4 class="name" id="updateReferralPayload"><span class="type-signature">(async) </span>updateReferralPayload<span class="signature">(_id, payload, options<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
 
     
 
@@ -902,7 +1030,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line95">line 95</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line97">line 97</a>
     </li></ul></dd>
     
 
@@ -934,6 +1062,8 @@
         <th>Type</th>
 
         
+        <th>Attributes</th>
+        
 
         
 
@@ -958,6 +1088,14 @@
             
             </td>
 
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
             
 
             
@@ -985,11 +1123,55 @@
             </td>
 
             
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
 
             
 
             <td class="description last">
                 Some payload (optional)
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>options</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>object</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">
+                Mongodb driver options for all requests (for example for transaction session)
                 
             </td>
         </tr>
@@ -1053,7 +1235,7 @@
 <br class="clear">
 
 <footer>
-    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.10</a> on Thu Jan 27 2022 20:07:53 GMT+0300 (GMT+03:00) using the Minami theme.
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.10</a> on Sun Jan 30 2022 19:53:01 GMT+0300 (GMT+03:00) using the Minami theme.
 </footer>
 
 <script>prettyPrint();</script>
