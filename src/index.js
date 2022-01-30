@@ -1,8 +1,11 @@
+// eslint-disable-next-line no-unused-vars
+const { MongoClient } = require('mongodb')
+
 class Referrals {
   /**
    * Referral system class constructor
    * @constructor
-   * @param {object} db - MongoDB Driver connection object
+   * @param {MongoClient} db - MongoDB Driver connection object
    * @param {string} [collectionName=referrals] - Referral collection name
    * @param {number} [referralLevels=3] - Count of levels
    */
@@ -24,7 +27,7 @@ class Referrals {
   /**
    * Creating new referral with or without parent
    * @method
-   * @param {string} _id - Referral identifier
+   * @param {string|ObjectId} _id - Referral identifier
    * @param {string} [payload] - Some payload
    * @param {string} [parent] - Parent referral identifier
    * @param {object} [options] - Mongodb driver options for all requests (for example for transaction session)
@@ -89,7 +92,7 @@ class Referrals {
   /**
    * Updating referral payload
    * @method
-   * @param {string} _id - Referral identifier
+   * @param {string|ObjectId} _id - Referral identifier
    * @param {string} payload - Some payload (optional)
    * @param {object} [options] - Mongodb driver options for all requests (for example for transaction session)
    * @returns {Promise}
@@ -124,7 +127,7 @@ class Referrals {
    * Removing referral
    * @method
    * @returns {Promise}
-   * @param {string} _id - Referral identifier
+   * @param {string|ObjectId} _id - Referral identifier
    * @param {object} [options] - Mongodb driver options for all requests (for example for transaction session)
    */
   async removeReferral (_id, options) {
@@ -154,7 +157,7 @@ class Referrals {
   /**
    * Getting referral data
    * @method
-   * @param {string} _id - Referral identifier
+   * @param {string|ObjectId} _id - Referral identifier
    * @param {object} [options] - Mongodb driver options for all requests (for example for transaction session)
    * @returns {Promise}
    */
