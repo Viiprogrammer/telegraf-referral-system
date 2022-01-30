@@ -1,6 +1,6 @@
 class Referrals {
   /**
-   * Referal system class constructor
+   * Referral system class constructor
    * @constructor
    * @param {object} db - MongoDB Driver connection object
    * @param {string} [collectionName=referrals] - Referral collection name
@@ -12,13 +12,13 @@ class Referrals {
     this._collection = this._db.collection(collectionName)
   }
 
-  _updateReferal (filter, update, options) {
+  _updateReferral (filter, update, options) {
     return this._collection
       .findOneAndUpdate(filter, update, options)
   }
 
-  _createReferral (doc) {
-    return this._collection.insertOne(doc)
+  _createReferral (doc, options) {
+    return this._collection.insertOne(doc, options)
   }
 
   /**
@@ -27,12 +27,13 @@ class Referrals {
    * @param {string} _id - Referral identifier
    * @param {string} [payload] - Some payload
    * @param {string} [parent] - Parent referral identifier
+   * @param {object} [options] - Mongodb driver options for all requests (for example for transaction session)
    * @returns {Promise}
    */
-  async createReferral (_id, payload, parent) {
+  async createReferral (_id, payload, parent, options) {
     if (parent) {
       // Update parent childrens, push new referral to first level
-      const { value: user } = await this._updateReferal(
+      const { value: user } = await this._updateReferral(
         { _id: parent },
         {
           $push: {
@@ -41,7 +42,7 @@ class Referrals {
             }
           }
         },
-        { new: true }
+        { new: true, ...options }
       )
 
       const childrenParents = { 1: parent }
@@ -54,11 +55,11 @@ class Referrals {
         }
       }
 
-      const referalDoc = {
+      const referralDoc = {
         _id, payload, parents: childrenParents
       }
 
-      await this._createReferral(referalDoc)
+      await this._createReferral(referralDoc, options)
       let parentsForUpdate = []
       // Adding to child list of parens (exclusive first level) current child
       if (childrenParents) {
@@ -73,15 +74,15 @@ class Referrals {
               }])
           }
         }
-        parentsForUpdate = parentsForUpdate.map((parent) => this._updateReferal(...parent))
+        parentsForUpdate = parentsForUpdate.map((parent) => this._updateReferral(...parent, options))
         await Promise.all(parentsForUpdate)
       }
-      return referalDoc
+      return referralDoc
     } else {
       return this._createReferral({
         _id,
         payload
-      }, {})
+      }, options)
     }
   }
 
@@ -90,12 +91,14 @@ class Referrals {
    * @method
    * @param {string} _id - Referral identifier
    * @param {string} payload - Some payload (optional)
+   * @param {object} [options] - Mongodb driver options for all requests (for example for transaction session)
    * @returns {Promise}
    */
-  async updateReferralPayload (_id, payload) {
+  async updateReferralPayload (_id, payload, options) {
     const referral = await this._collection
       .findOne({ _id }, {
-        projection: { parents: 1 }
+        projection: { parents: 1 },
+        ...options
       })
 
     const update = []
@@ -112,8 +115,8 @@ class Referrals {
       this._collection.findOneAndUpdate(
         { _id },
         { $set: { payload } },
-        { returnDocument: 'after' }
-      ), ...update.map((parent) => this._collection.findOneAndUpdate(...parent))
+        { returnDocument: 'after', ...options }
+      ), ...update.map((parent) => this._collection.findOneAndUpdate(...parent, options))
     ])
   }
 
@@ -122,11 +125,13 @@ class Referrals {
    * @method
    * @returns {Promise}
    * @param {string} _id - Referral identifier
+   * @param {object} [options] - Mongodb driver options for all requests (for example for transaction session)
    */
-  async removeReferral (_id) {
+  async removeReferral (_id, options) {
     const referral = await this._collection
       .findOne({ _id }, {
-        projection: { parents: 1 }
+        projection: { parents: 1 },
+        ...options
       })
 
     const update = []
@@ -142,7 +147,7 @@ class Referrals {
     return await Promise.all([
       this._collection.findOneAndDelete(
         { _id }
-      ), ...update.map((parent) => this._collection.findOneAndUpdate(...parent))
+      ), ...update.map((parent) => this._collection.findOneAndUpdate(...parent, options))
     ])
   }
 
@@ -150,6 +155,7 @@ class Referrals {
    * Getting referral data
    * @method
    * @param {string} _id - Referral identifier
+   * @param {object} [options] - Mongodb driver options for all requests (for example for transaction session)
    * @returns {Promise}
    */
   getReferrals (_id, options) {
